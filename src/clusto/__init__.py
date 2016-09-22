@@ -31,11 +31,15 @@ def connect(config, echo=False):
     @param config: the config object
     """
 
-    SESSION.configure(bind=create_engine(config.get('clusto', 'dsn'),
-                                         echo=echo,
-                                         poolclass=SingletonThreadPool,
-                                         pool_recycle=600
-                                         ))
+    dsn = config.get('clusto', 'dsn')
+    if dsn.startswith('http'):
+        SESSION.clusto_api = True
+    else:
+        SESSION.configure(bind=create_engine(dsn,
+                                             echo=echo,
+                                             poolclass=SingletonThreadPool,
+                                             pool_recycle=600
+                                             ))
 
     SESSION.clusto_version = None
 
